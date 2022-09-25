@@ -1,62 +1,71 @@
 package soal2;
 
-public class resto {
-	private String[] nama_makanan;
-	private double[] harga_makanan;
-	private int[] stok;
-	public static byte id=0;
+import java.util.Scanner;
+
+public class resto{
+	private DaftarMakanan menu;
+	private static byte id=0;
 	
-	public void setNamaMakanan(String[] nama_makanan) {
-		this.nama_makanan = nama_makanan;
+	resto() {
+		menu = new DaftarMakanan();
 	}
-	public String[] getNamaMakanan() {
-		return this.nama_makanan;
+	public void tambahMenu(String nama, double harga, int stok) {
+		menu.setNamaMakanan(nama, id);
+		menu.setHargaMakanan(harga, id);
+		menu.setStok(stok, id);
 	}
-	public void setHargaMakanan(double[] harga_makanan) {
-		this.harga_makanan = harga_makanan;
-	}
-	public double[] getHargaMakanan() {
-		return harga_makanan;
-	}
-	public void setStok(int[] stok) {
-		this.stok = stok;
-	}
-	public int[] getStok() {
-		return stok;
-	}
-	public resto() {
-		nama_makanan = new String[10];
-		harga_makanan = new double[10];
-		stok = new int[10];
-	}
-	
-	public void tambahMenuMakanan (String nama, double harga) {
-		this.nama_makanan[id] = nama;
-		this.harga_makanan[id] = harga;
-	}
-	public void tampilMenuMakanan () {
-		for(int i=0; i<=id; i++) {
-			if(!isOutOfStock(i)) {
-				/*System.out.println(nama_makanan[i] + "[" +stok[i]+ "]" + "\tRp. " +harga_makanan[i]);*/
-				System.out.println(nama_makanan[i] + "\tRp. " +harga_makanan[i]);
-			}
-		}
-		System.out.println(nama_makanan + "\tRp. " +harga_makanan);
-	}
-	public boolean isOutOfStock(int id) {
-		if(stok[id] == 0) {
+	public boolean IsOutOfStock(int id) {
+		if(menu.getStok(id)==0) {
 			return true;
 		}else {
 			return false;
 		}
 	}
-	/*public void PemesananMakanan (String nama, double harga, int stok) {
-		this.nama_makanan[id] = nama;
-		this.harga_makanan[id] = harga;
-		this.stok[id] = stok;
-	}*/
-
 	public static void nextId() {
 		id++;
+	}
+	public void jumlahMakanan(int id,int jumlah) {
+		int idMenu = (byte) id;
+		double harga;
+		harga = jumlah*menu.getHargaMakanan(idMenu);
+		System.out.println("Total pesanan "+harga);
+	}
+	public void pesanMakanan(int id, int jumlah) {
+		id=id-1;
+		int idMenu=(byte) id;
+		if(jumlah<0)
+			System.out.println("jumlah ga boleh kurang dari 0");
+		if((menu.getStok(idMenu)-jumlah)<0)
+			System.out.println("Mohon maaf stok tidak cukup");
+		else {
+			System.out.println(menu.getNamaMakanan(idMenu)+"sebanyak"+jumlah);
+			menu.kurangStok(idMenu, jumlah);
+			jumlahMakanan(idMenu, jumlah);
+			System.out.println("-------------------------");
+		}
+	}
+	public void pesan() {
+		byte a,b;
+		Scanner input = new Scanner(System.in);
+		tampilMenu();
+		System.out.println();
+		System.out.println("No menu : ");
+		a=input.nextByte();
+		System.out.println("Jumlah pesanan : ");
+		b=input.nextByte();
+		pesanMakanan(a,b);
+	}
+	public void tampilMenu() {
+		String status = "Habis";
+		System.out.println("--------Menu Makanan--------");
+		for(byte i=0;i<=id;i++) {
+			if(!IsOutOfStock(i)) {
+				System.out.printf("%-2d. %-15s %-15d", i+1, menu.getNamaMakanan(i), menu.getStok(i));
+				System.out.println("Rp. "+menu.getHargaMakanan(i));
+			}else {
+				System.out.printf("%-2d. %-15s %-15s", i+1, menu.getNamaMakanan(i), status);
+				System.out.println("Rp. " + menu.getHargaMakanan(i));
+			}
+		}
 	}
 }
